@@ -1,0 +1,84 @@
+$bg-color: #caf0f8;
+$gallery-color: #48cae4;
+$border-color: grey;
+$header-color: #90e0ef;
+$logo-color: #008cff;
+
+$grid-breakpoints: (
+    xs: 0,
+    sm: 500px,
+    md: 750px,
+    lg: 1000px,
+    xl: 1250px,
+    xxl: 1500px
+);
+
+@font-face {
+    font-family: 'Jost';
+    src: url('../fonts/Jost/Jost-VariableFont_wght.ttf') format('truetype');
+}
+
+@mixin basic {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+@mixin centralize-page {
+    width: 1000px;
+}
+
+@mixin icon {
+    width: 30px;
+    height: 30px;
+    mix-blend-mode: multiply;
+}
+
+nav {
+    .navbar-brand {
+        color: $logo-color;
+    }
+}
+
+body {
+    background-color: $bg-color;
+}
+
+.text-center {
+    width: 1000px;
+}
+
+footer {
+    @include basic;
+    border-top: 1px solid black;
+    .centralizer {
+        @include centralize-page;
+        display: flex;
+        align-items: center;
+        height: 70px;
+    }
+
+    .name {
+        font-family: 'Jost';
+    }
+
+    .icons {
+        margin-left: auto;
+        display: flex;
+        justify-content: space-between;
+        width: 110px;
+        a, .icon {
+            @include icon;
+        }
+    }
+}
+
+.toast {
+    background-color: #f8f9fa; // Цвет фона
+    border: 1px solid #007bff; // Цвет границы
+}
+
+.toast-header {
+    background-color: #007bff; // Цвет заголовка
+    color: white; // Цвет текста заголовка
+}
