@@ -7,6 +7,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('cities', CityController::class);
 Route::get('cities/trashed', [CityController::class, 'trashed'])->name('cities.trashed');
 Route::patch('cities/{id}/restore', [CityController::class, 'restore'])->name('cities.restore');
+Route::resource('cities', CityController::class);
