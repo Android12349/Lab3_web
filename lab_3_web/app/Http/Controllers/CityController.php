@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\City;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -11,10 +12,26 @@ class CityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function welcome(User $user)
     {
-        $cities = City::all();
-        return view('cities.index', compact('cities'));
+        $user = auth()->user();
+
+        return view('welcome', compact('user'));
+    }
+
+    public function index(User $user)
+    {
+        $user = auth()->user(); // Текущий пользователь
+        $cities = $user->cities()->get();
+
+        return view('users.cities.index', compact('cities', 'user'));
+    }
+
+    public function indexForUser(User $user)
+    {
+        $cities = $user->cities()->get();
+
+        return view('cities.index', compact('cities', 'user'));
     }
 
     /**
@@ -28,24 +45,27 @@ class CityController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
+        $user = auth()->user();
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'foundation_year' => 'required|integer|min:0',
             'mayor' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
         ]);
-
-        $city = City::create($validated);
-
-        // Сохранение изображения
+    
+        $city = City::create([
+            ...$validated,
+            'user_id' => auth()->id(),
+        ]);
+    
         if ($request->hasFile('image')) {
             $this->storeImage($city, $request->file('image'));
         }
-
-        return redirect()->route('cities.index')->with('success', 'Город добавлен!');
+    
+        return redirect()->route('users.cities.index', compact('user'))->with('success', 'Город добавлен!');
     }
 
     /**
@@ -61,14 +81,19 @@ class CityController extends Controller
      */
     public function edit(City $city)
     {
+        if ($city->user_id !== auth()->id()) {
+            abort(403, 'У вас нет прав для изменения этого города.');
+        }
+
         return view('cities.edit', compact('city'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, City $city)
     {
+        if ($city->user_id !== auth()->id()) {
+            abort(403, 'У вас нет прав для изменения этого города.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'foundation_year' => 'required|integer|min:0',
@@ -79,24 +104,17 @@ class CityController extends Controller
 
         $city->update($validated);
 
-        // Обновление изображения
-        if ($request->hasFile('image')) {
-            $this->deleteImage($city);
-            $this->storeImage($city, $request->file('image'));
-        }
-
         return redirect()->route('cities.index')->with('success', 'Город обновлен!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(City $city)
     {
-        // Удаление файла изображения
-        $this->deleteImage($city);
+        if ($city->user_id !== auth()->id()) {
+            abort(403, 'У вас нет прав для удаления этого города.');
+        }
 
         $city->delete();
+
         return redirect()->route('cities.index')->with('success', 'Город удален!');
     }
 
@@ -123,8 +141,9 @@ class CityController extends Controller
 
     public function trashed()
     {
-        $trashedCities = City::onlyTrashed()->get();
-        return view('cities.trashed', compact('trashedCities'));
+    $trashedCities = City::onlyTrashed()->where('user_id', auth()->id())->get();
+    $user = auth()->user(); // Текущий пользователь
+    return view('cities.trashed', compact('trashedCities', 'user'));
     }
 
     public function restore($id)

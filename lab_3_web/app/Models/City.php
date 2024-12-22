@@ -21,6 +21,7 @@ class City extends Model
         'mayor',
         'image',
         'description',
+        'user_id',
     ];
 
     // Поля, которые будут автоматически кастоваться как даты
@@ -46,5 +47,10 @@ class City extends Model
     public function getUpdatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

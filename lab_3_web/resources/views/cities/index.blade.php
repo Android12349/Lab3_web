@@ -1,35 +1,45 @@
-@extends('layouts.app')
+@extends('layouts.appp')
 
 @section('content')
 <div class="container">
-    <a href="{{ route('cities.create') }}" class="btn btn-primary mb-3">Добавить город</a>
+    <h1>Города пользователя: {{ $user->name }}</h1>
+
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Название</th>
                 <th>Год основания</th>
                 <th>Мэр</th>
-                <th>Действия</th>
+                <th>Информация</th>
+                @if (auth()->id() === $user->id)
+                    <th>Действия</th>
+                @endif
             </tr>
         </thead>
         <tbody>
-            @foreach($cities as $city)
+        @foreach ($cities as $city)
             <tr>
                 <td>{{ $city->name }}</td>
                 <td>{{ $city->foundation_year }}</td>
                 <td>{{ $city->mayor }}</td>
-                <td>
-                    <a href="{{ route('cities.show', $city->id) }}" class="btn btn-info btn-sm">Просмотр</a>
-                    <a href="{{ route('cities.edit', $city->id) }}" class="btn btn-warning btn-sm">Редактировать</a>
-                    <form action="{{ route('cities.destroy', $city->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
-                    </form>
-                </td>
+                <td>{{ $city->description }}</td>
+                @if (auth()->id() === $user->id) <!-- Действия только для владельца -->
+                    <td>
+                        <a href="{{ route('cities.edit', $city) }}" class="btn btn-warning">Редактировать</a>
+                        <form action="{{ route('cities.destroy', $city) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </td>
+                @endif
             </tr>
-            @endforeach
+        @endforeach
         </tbody>
     </table>
+
+    @if (auth()->id() === $user->id)
+        <a href="{{ route('cities.create') }}" class="btn btn-primary mb-3">Добавить город</a>
+    @endif
 </div>
 @endsection

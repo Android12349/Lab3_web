@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.appp')
 
 @section('content')
 <div class="container">
@@ -27,11 +27,13 @@
                         <td>{{ $city->id }}</td>
                         <td>{{ $city->name }}</td>
                         <td>
+                        @can('restore', $city)
                             <form action="{{ route('cities.restore', $city->id) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="btn btn-success">Восстановить</button>
                             </form>
+                        @endcan
                         </td>
                     </tr>
                 @endforeach
@@ -39,6 +41,6 @@
         </table>
     @endif
 
-    <a href="{{ route('cities.index') }}" class="btn btn-primary">Назад к городам</a>
+    <a href="{{ route('users.cities.index', ['user' => $user->id]) }}" class="btn btn-primary">Назад к городам</a>
 </div>
 @endsection
