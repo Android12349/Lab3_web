@@ -30,6 +30,17 @@
                                 @csrf
                                 <button type="submit" class="dropdown-item">Выйти</button>
                             </form>
+
+                            <form method="POST" action="{{ route('friends.add', ['user' => $user->id]) }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Добавить в друзья</button>
+                            </form>
+
+                            <form method="POST" action="{{ route('friends.remove', ['user' => $user->id]) }}" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item">Удалить из друзей</button>
+                            </form>
                         </li>
                     </ul>
                 </li>

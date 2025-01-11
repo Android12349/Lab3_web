@@ -3,8 +3,18 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\LandmarkController;
+use App\Http\Controllers\FriendController;
 
 Route::get('/', [CityController::class, 'welcome'])->name('welcome');
+
+Route::resource('landmarks', LandmarkController::class)->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    Route::post('friends/{user}/add', [FriendController::class, 'addFriend'])->name('friends.add');
+    Route::delete('friends/{user}/remove', [FriendController::class, 'removeFriend'])->name('friends.remove');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -16,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/city', [CityController::class, 'index'])->name('cities.index');
     Route::get('users/{user}/cities', [CityController::class, 'indexForUser'])->name('users.cities.index');
     Route::get('/cities/create', [CityController::class, 'create'])->name('cities.create'); // Форма создания
     Route::post('/cities', [CityController::class, 'store'])->name('cities.store');        // Сохранение нового объекта

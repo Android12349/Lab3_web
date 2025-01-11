@@ -50,4 +50,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(City::class);
     }
+
+    public function landmarks()
+    {
+        return $this->hasMany(Landmark::class);
+    }
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id');
+    }
 }

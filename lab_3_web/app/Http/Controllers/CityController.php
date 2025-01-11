@@ -24,13 +24,13 @@ class CityController extends Controller
         $user = auth()->user(); // Текущий пользователь
         $cities = $user->cities()->get();
 
-        return view('users.cities.index', compact('cities', 'user'));
+        return view('cities.index', compact('cities', 'user'));
     }
 
     public function indexForUser(User $user)
     {
         $cities = $user->cities()->get();
-
+        
         return view('cities.index', compact('cities', 'user'));
     }
 
@@ -39,7 +39,9 @@ class CityController extends Controller
      */
     public function create()
     {
-        return view('cities.create');
+        $user = auth()->user(); // Текущий пользователь
+
+        return view('cities.create', compact('user'));
     }
 
     /**
@@ -73,7 +75,9 @@ class CityController extends Controller
      */
     public function show(City $city)
     {
-        return view('cities.show', compact('city'));
+        $user = auth()->user(); // Текущий пользователь
+
+        return view('cities.show', compact('city', 'user'));
     }
 
     /**
@@ -85,7 +89,9 @@ class CityController extends Controller
             abort(403, 'У вас нет прав для изменения этого города.');
         }
 
-        return view('cities.edit', compact('city'));
+        $user = auth()->user(); // Текущий пользователь
+
+        return view('cities.edit', compact('city', 'user'));
     }
 
     public function update(Request $request, City $city)
@@ -103,8 +109,9 @@ class CityController extends Controller
         ]);
 
         $city->update($validated);
+        $user = auth()->user(); // Текущий пользователь
 
-        return redirect()->route('cities.index')->with('success', 'Город обновлен!');
+        return redirect()->route('cities.index', compact('user'))->with('success', 'Город обновлен!');
     }
 
     public function destroy(City $city)
@@ -113,9 +120,10 @@ class CityController extends Controller
             abort(403, 'У вас нет прав для удаления этого города.');
         }
 
+        $user = auth()->user(); // Текущий пользователь
         $city->delete();
 
-        return redirect()->route('cities.index')->with('success', 'Город удален!');
+        return redirect()->route('cities.index', compact('user'))->with('success', 'Город удален!');
     }
 
     /**
@@ -141,15 +149,17 @@ class CityController extends Controller
 
     public function trashed()
     {
-    $trashedCities = City::onlyTrashed()->where('user_id', auth()->id())->get();
-    $user = auth()->user(); // Текущий пользователь
-    return view('cities.trashed', compact('trashedCities', 'user'));
+        $trashedCities = City::onlyTrashed()->where('user_id', auth()->id())->get();
+        $user = auth()->user(); // Текущий пользователь
+        return view('cities.trashed', compact('trashedCities', 'user'));
     }
 
     public function restore($id)
     {
+        $user = auth()->user(); // Текущий пользователь'
         $city = City::onlyTrashed()->findOrFail($id);
         $city->restore();
-        return redirect()->route('cities.trashed')->with('success', 'Город восстановлен!');
+        $trashedCities = City::onlyTrashed()->where('user_id', auth()->id())->get();
+        return redirect()->route('cities.trashed', compact('trashedCities', 'user'))->with('success', 'Город восстановлен!');
     }
 }

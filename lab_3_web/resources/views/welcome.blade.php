@@ -14,7 +14,7 @@
                 @if (Route::has('user'))
                     <a class="navbar-brand" href="{{ route('users.cities.index', ['user' => $user->id]) }}">Города Португалии</a>
                 @else
-                    <a class="navbar-brand" href="/dashboard">Города Португалии</a>
+                    <a class="navbar-brand" href="/city">Города Португалии</a>
                 @endif
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

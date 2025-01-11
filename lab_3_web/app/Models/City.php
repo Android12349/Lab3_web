@@ -53,4 +53,9 @@ class City extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function landmarks()
+    {
+        return $this->hasMany(Landmark::class);
+    }
 }

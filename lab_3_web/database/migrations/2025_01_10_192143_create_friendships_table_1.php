@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateFriendshipsTable1 extends Migration
+{
+    public function up()
+    {
+        // Если таблица уже существует, её удаляем перед созданием новой
+        Schema::dropIfExists('friendships');
+
+        Schema::create('friendships', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Кто добавил в друзья
+            $table->foreignId('friend_id')->constrained('users')->onDelete('cascade'); // Друг
+            $table->timestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('friendships');
+    }
+}
